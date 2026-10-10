@@ -1,0 +1,681 @@
+/* =========================================================
+   RESET E FONTES
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f4f7f9; /* Fundo mais suave e moderno */
+    color: #334155;
+    margin-left: 0;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1.6;
+}
+
+/* =========================================================
+   BARRA DE ROLAGEM CUSTOMIZADA (SCROLLBAR)
+   ========================================================= */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* =========================================================
+   CABEÇALHO (HEADER)
+   ========================================================= */
+header {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    color: #fff;
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(17, 94, 89, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.btn-menu {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    padding: 6px 12px !important;
+    margin: 0 !important;
+    width: auto !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-menu:hover {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   MENU LATERAL (SIDEBAR)
+   ========================================================= */
+.sidebar {
+    width: 280px;
+    background-color: #0f766e;
+    background-image: linear-gradient(180deg, #0f766e 0%, #134e4a 100%);
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: -290px;
+    padding: 20px 15px;
+    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.2);
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 15px;
+}
+
+.sidebar h3 {
+    font-size: 1rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #99f6e4;
+    font-weight: 700;
+}
+
+.btn-close {
+    background: rgba(0,0,0,0.1) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-close:hover {
+    background: rgba(0,0,0,0.3) !important;
+}
+
+.sidebar a {
+    display: block;
+    color: #f8fafc;
+    text-decoration: none;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+}
+
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+/* O MENU ATIVO QUE VOCÊ PEDIU */
+.sidebar a.ativo, .link-admin.ativo {
+    background-color: #ffffff !important;
+    color: darkblue !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    transform: translateX(5px);
+}
+
+/* =========================================================
+   CONTAINER E CARDS (ANIMAÇÕES)
+   ========================================================= */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 16px; /* Mais arredondado */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+    flex: 1;
+    min-width: 300px;
+    padding: 25px 30px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    overflow-x: auto;
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Atraso na animação para criar um efeito de escada (cascade) */
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.2s; }
+
+.full-width {
+    flex: 1 1 100% !important;
+    width: 100%;
+}
+
+h2 {
+    margin-bottom: 24px;
+    font-size: 1.3rem;
+    color: #0f172a;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =========================================================
+   FORMULÁRIOS E INPUTS
+   ========================================================= */
+form label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+form input, form select, .filtros-inputs input, .filtros-inputs select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: all 0.2s ease;
+}
+
+form input:focus, form select:focus, .filtros-inputs input:focus, .filtros-inputs select:focus {
+    outline: none;
+    border-color: #0f766e;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.1);
+}
+
+.select-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.select-container select {
+    flex: 1;
+}
+
+/* Botões do Menu Lateral de Ações (Editar, add barbeiro) */
+#btn-editar-barbeiro, #btn-adicionar-barbeiro, #btn-remover-barbeiro {
+    width: 46px !important;
+    height: 46px !important;
+    margin-top: 0 !important; /* Corrigido alinhamento */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#btn-editar-barbeiro:hover, #btn-adicionar-barbeiro:hover {
+    background-color: #f0fdf4 !important;
+    border-color: #22c55e !important;
+}
+#btn-remover-barbeiro:hover {
+    background-color: #fef2f2 !important;
+    border-color: #ef4444 !important;
+}
+
+/* =========================================================
+   BOTÕES GERAIS
+   ========================================================= */
+button {
+    background-color: #0f766e;
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 24px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(194, 65, 12, 0.25);
+}
+
+button:hover {
+    background-color: #115e59;
+    box-shadow: 0 6px 12px rgba(17, 94, 89, 0.3);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(17, 94, 89, 0.2);
+}
+
+/* =========================================================
+   FILTROS
+   ========================================================= */
+.filtros-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.filtros-inputs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#btn-limpar-filtro {
+    background-color: #64748b !important;
+    box-shadow: none !important;
+    padding: 12px 18px !important;
+    margin-top: 0 !important;
+    width: auto !important;
+}
+
+#btn-limpar-filtro:hover {
+    background-color: #475569 !important;
+}
+
+#btn-exportar, #btn-pagar-visiveis {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    width: auto !important;
+    padding: 0 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   TABELAS
+   ========================================================= */
+table {
+    width: 100%;
+    border-collapse: separate; /* Muda para separate para bordas arredondadas funcionarem */
+    border-spacing: 0;
+    margin-top: 10px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+th, td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+    font-size: 0.95rem;
+    white-space: nowrap; /* Evita quebra de linha feia no celular */
+}
+
+th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Linha Paga - Destaque suave */
+tr.linha-paga td {
+    background-color: #f0fdf4 !important;
+    border-bottom: 1px solid #dcfce7;
+}
+
+tr.linha-paga:hover td {
+    background-color: #dcfce7 !important;
+}
+
+/* Botão de Excluir da Tabela */
+.btn-excluir {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+    padding: 8px 14px !important;
+    margin-top: 0 !important;
+    width: auto !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    box-shadow: none !important;
+    border: 1px solid #fca5a5 !important;
+}
+
+.btn-excluir:hover {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* =========================================================
+   OVERLAY (FUNDO ESCURO DO MENU)
+   ========================================================= */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* =========================================================
+   RESPONSIVIDADE (CELULARES)
+   ========================================================= */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+    
+    .card {
+        padding: 20px 15px;
+    }
+    
+    .filtros-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filtros-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    header h1 {
+        font-size: 1.2rem;
+    }
+}
+
+/* =========================================================
+   MODAL CUSTOMIZADO (substitui alert/confirm/prompt nativos)
+   ========================================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.modal-overlay.ativo {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 28px;
+    width: 90%;
+    max-width: 420px;
+    animation: fadeInUp 0.2s ease forwards;
+}
+
+.modal-mensagem {
+    color: #0f172a;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    white-space: pre-line;
+    margin-bottom: 20px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    font-size: 0.95rem;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #0f766e;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.1);
+}
+
+.modal-acoes {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.modal-btn-primario {
+    background-color: #0f766e;
+    color: white;
+    box-shadow: 0 4px 6px rgba(194, 65, 12, 0.25);
+}
+
+.modal-btn-primario:hover {
+    background-color: #115e59;
+}
+
+.modal-btn-secundario {
+    background-color: #f1f5f9;
+    color: #475569;
+    box-shadow: none;
+    border: 1.5px solid #e2e8f0;
+}
+
+.modal-btn-secundario:hover {
+    background-color: #e2e8f0;
+}
+
+/* ===== Hotel ===== */
+.tabela{width:100%;border-collapse:collapse;font-size:.92rem}
+.tabela th,.tabela td{padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:left;white-space:nowrap}
+.rolagem{overflow-x:auto}
+.grade-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+.cal th,.cal td{border:1px solid #e2e8f0;text-align:center;font-size:.72rem;padding:0}
+.cal th.q{position:sticky;left:0;background:#fff;padding:6px 10px;z-index:1}
+.cal td.dia{min-width:34px;height:38px;cursor:pointer;overflow:hidden}
+.cal td.dia:hover{background:#ccfbf1}
+.cal td.airbnb{background:#ff5a5f;color:#fff}.cal td.booking{background:#003580;color:#fff}.cal td.direto{background:#16a34a;color:#fff}
+.cal td.pendente{box-shadow:inset 0 -5px 0 #facc15}
+.legenda{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:10px 0}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:15px}
+.kpi{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;text-align:center}
+.kpi small{color:#64748b;font-weight:600}.kpi b{display:block;font-size:1.4rem;color:#0f172a}
+.selo{padding:2px 9px;border-radius:99px;font-size:.78rem;font-weight:600}
+.selo.pago{background:#dcfce7;color:#166534}.selo.parcial{background:#fef9c3;color:#854d0e}.selo.pendente{background:#fee2e2;color:#991b1b}
+.graficos{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:15px}
+.btn-mini{width:auto!important;margin:0 4px 0 0!important;padding:4px 10px!important;font-size:.8rem!important}
+
+/* =========================================================
+   RESPONSIVIDADE: celular e tablet
+   ========================================================= */
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
+button, a, select, input { touch-action: manipulation; }
+.card { min-width: 0; }
+header { padding-top: max(14px, env(safe-area-inset-top)); padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+header h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+#btn-sair { flex-shrink: 0; }
+.sidebar { width: min(300px, 86vw); left: calc(-1 * min(300px, 86vw) - 30px); padding-top: max(20px, env(safe-area-inset-top)); }
+.sidebar.open { left: 0; }
+.sidebar a { padding: 14px 16px; }
+.modal-overlay { width: auto; height: auto; inset: 0; padding: 16px; }
+.modal-box { max-height: 90dvh; overflow-y: auto; width: 100%; }
+.modal-input { font-size: 16px; }
+.grade-form { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.graficos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.gbox { position: relative; height: 300px; }
+.nav-mes { display: flex; gap: 6px; align-items: stretch; }
+.nav-mes button { margin: 0; width: auto; padding: 0 14px; min-height: 44px; }
+.nav-mes input { min-width: 0; }
+
+/* calendário: cabeçalho e coluna dos quartos fixos ao rolar */
+.cal-box { max-height: 72vh; overflow: auto; -webkit-overflow-scrolling: touch; border: 1px solid #e2e8f0; border-radius: 10px; }
+.cal { border-collapse: separate; border-spacing: 0; min-width: max-content; }
+.cal thead th { position: sticky; top: 0; background: #f8fafc; z-index: 2; min-width: 42px; padding: 4px 0; font-size: .8rem; }
+.cal thead th small { display: block; font-weight: 500; color: #94a3b8; font-size: .65rem; }
+.cal thead th.fds { background: #f1f5f9; }
+.cal thead th.hoje { background: #0f766e; color: #fff; } .cal thead th.hoje small { color: #ccfbf1; }
+.cal th.q { position: sticky; left: 0; z-index: 3; background: #fff; min-width: 64px; font-size: .9rem; box-shadow: 2px 0 0 #e2e8f0; }
+.cal thead th.q { z-index: 4; background: #f8fafc; }
+.cal td.dia { height: 46px; font-size: .78rem; }
+.cal td.dia span { display: block; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; text-align: left; }
+
+/* tablet */
+@media (max-width: 1024px) {
+    .container { padding: 0 16px; gap: 18px; }
+    .card { padding: 22px 20px; }
+    .kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+
+/* celular */
+@media (max-width: 700px) {
+    html { font-size: 15px; }
+    .container { margin: 14px auto; padding: 0 12px; gap: 14px; }
+    .card { padding: 16px 14px; border-radius: 14px; }
+    h2 { font-size: 1.15rem; margin-bottom: 16px; }
+    header { gap: 10px; padding-bottom: 12px; }
+    header h1 { font-size: 1.1rem; }
+    input, select, textarea { font-size: 16px !important; min-height: 46px; width: 100%; }
+    .card input[style*="max-width"], .card select[style*="max-width"] { max-width: none !important; }
+    button { min-height: 46px; }
+    form > div[style*="display:flex"] { flex-direction: column; }
+    form > div[style*="display:flex"] button { width: 100%; }
+    .kpis { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi { padding: 10px 6px; } .kpi b { font-size: 1.1rem; }
+    .gbox { height: 260px; }
+    .legenda { gap: 10px 14px; font-size: .8rem; }
+    .cal-box { max-height: 68vh; }
+    .cal td.dia { height: 52px; }
+    .cal thead th { min-width: 44px; }
+
+    /* tabelas viram cartões empilhados */
+    .tabela.cartoes thead { display: none; }
+    .tabela.cartoes, .tabela.cartoes tbody { display: block; }
+    .tabela.cartoes tr { display: block; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; }
+    .tabela.cartoes td { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 0; padding: 6px 0; white-space: normal; text-align: right; }
+    .tabela.cartoes td::before { content: attr(data-label); font-weight: 600; color: #64748b; text-align: left; flex-shrink: 0; }
+    .tabela.cartoes td[data-label=""]::before { content: none; }
+    .tabela.cartoes td.acoes { justify-content: flex-start; flex-wrap: wrap; gap: 8px; padding-top: 10px; margin-top: 4px; border-top: 1px solid #f1f5f9; }
+    .btn-mini { min-height: 42px !important; padding: 8px 16px !important; font-size: .9rem !important; flex: 1 1 auto; }
+}
+
+/* sem hover em telas de toque (evita "hover preso" ao tocar) */
+@media (hover: none) {
+    button:hover, .sidebar a:hover { transform: none; box-shadow: none; }
+    .card:hover { transform: none; }
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Insumos e Custos - Hotel{% endblock %}
+{% block cabecalho %}Insumos e Custos{% endblock %}
+{% block conteudo %}
+<section class="card full-width" style="border-top:5px solid #ef4444;">
+    <h2 style="color:#dc2626;">💸 Lançar Gasto</h2>
+    <form id="form"><div class="grade-form">
+        <div><label>Data</label><input type="date" id="data" required></div>
+        <div><label>Categoria</label><select id="categoria">
+            <option value="limpeza">Limpeza</option><option value="produtos">Produtos / insumos</option><option value="lavanderia">Lavanderia / enxoval</option>
+            <option value="contas">Contas (luz, água, internet)</option><option value="manutencao">Manutenção</option><option value="outros">Outros</option></select></div>
+        <div><label>Descrição</label><input id="descricao" required placeholder="Ex: Diarista, sabonete, conta de luz"></div>
+        <div><label>Valor (R$)</label><input type="number" id="valor" min="0" step="0.01" required></div>
+        <div><label>Quarto (opcional)</label><select id="quarto_id"><option value="">Geral do hotel</option></select></div>
+    </div><button type="submit" style="background:#ef4444;margin-top:18px;">Lançar gasto 📉</button></form>
+</section>
+<section class="card full-width">
+    <h2>📋 Histórico</h2>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0;">
+        <input type="month" id="f-mes" style="max-width:180px;">
+        <strong>Total do mês: <span id="total" style="color:#dc2626;">R$ 0,00</span></strong>
+    </div>
+    <div class="rolagem"><table class="tabela cartoes"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Quarto</th><th>Valor</th><th></th></tr></thead><tbody id="lista"></tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/custos.js') }}"></script>{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}Reservas - Hotel{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+<section class="card full-width" style="border-top:5px solid #0f766e;">
+    <h2 id="titulo-form">📝 Nova Reserva</h2>
+    <form id="form">
+        <div class="grade-form">
+            <div><label>🛏️ Quarto</label><select id="quarto_id" required></select></div>
+            <div><label>Check-in</label><input type="date" id="checkin" required></div>
+            <div><label>Check-out</label><input type="date" id="checkout" required></div>
+            <div><label>Origem</label>
+                <select id="origem"><option value="direto">Aluguel direto</option><option value="airbnb">Airbnb</option><option value="booking">Booking</option></select></div>
+            <div><label>Hóspede (nome)</label><input id="hospede" required></div>
+            <div><label>Telefone</label><input id="telefone"></div>
+            <div><label>Nº de hóspedes</label><input type="number" id="hospedes" min="1" value="1"></div>
+            <div><label>💰 Valor total (R$)</label><input type="number" id="valor_total" min="0" step="0.01" required></div>
+            <div><label>Valor já pago (R$)</label><input type="number" id="valor_pago" min="0" step="0.01" value="0"></div>
+            <div><label>Forma de pagamento</label>
+                <select id="forma_pagamento"><option value="">—</option><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option>
+                <option value="debito">Débito</option><option value="credito">Crédito</option><option value="plataforma">Repasse da plataforma</option></select></div>
+            <div><label>Situação</label><select id="status"><option value="confirmada">Confirmada</option><option value="cancelada">Cancelada</option></select></div>
+        </div>
+        <div style="margin-top:12px;"><label>Observações</label><input id="observacao"></div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+            <button type="submit">Salvar reserva</button>
+            <button type="button" id="cancelar-edicao" class="ghost" style="display:none;background:#64748b;">Cancelar edição</button>
+        </div>
+    </form>
+</section>
+<section class="card full-width">
+    <h2>📋 Reservas</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">
+        <input type="month" id="f-mes" title="Mês" style="max-width:180px;">
+        <select id="f-origem" style="max-width:180px;"><option value="">Todas as origens</option><option value="direto">Direto</option><option value="airbnb">Airbnb</option><option value="booking">Booking</option></select>
+        <select id="f-situacao" style="max-width:200px;"><option value="">Todos os pagamentos</option><option value="pago">Pago</option><option value="parcial">Parcial</option><option value="pendente">Pendente</option></select>
+    </div>
+    <div class="rolagem"><table class="tabela cartoes"><thead><tr><th>Quarto</th><th>Hóspede</th><th>Período</th><th>Origem</th><th>Total</th><th>Pago</th><th>Pagamento</th><th></th></tr></thead><tbody id="lista"></tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/reservas.js') }}"></script>{% endblock %}
