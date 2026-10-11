@@ -4,7 +4,7 @@ from autenticacao.decoradores import login_obrigatorio
 
 bp = Blueprint("paginas", __name__)
 
-PAGINAS = {"calendario": "/", "reservas": "/reservas", "quartos": "/quartos",
+PAGINAS = {"calendario": "/", "anual": "/anual", "reservas": "/reservas", "quartos": "/quartos",
            "custos": "/custos", "relatorios": "/relatorios"}
 
 

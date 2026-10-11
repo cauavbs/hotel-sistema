@@ -16,7 +16,7 @@
     <div id="overlay" class="overlay"></div>
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header"><h3>Menu</h3><button id="btn-close-sidebar" class="btn-close">✕</button></div>
-        {% for chave, rotulo in [('calendario','Calendário'),('reservas','Reservas'),('quartos','Quartos'),('custos','Insumos e Custos'),('relatorios','Relatórios e Gráficos')] %}
+        {% for chave, rotulo in [('calendario','Calendário'),('anual','Calendário Anual'),('reservas','Reservas'),('quartos','Quartos'),('custos','Insumos e Custos'),('relatorios','Relatórios e Gráficos')] %}
         <a href="{{ url_for('paginas.' ~ chave) }}" class="{{ 'ativo' if active_page == chave else '' }}">{{ rotulo }}</a>
         {% endfor %}
     </nav>

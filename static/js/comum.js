@@ -19,3 +19,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-sair').onclick = () => { location.href = '/logout'; };
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => { }));
+
+// ---- Comprovantes: reduz imagens no celular e envia ao servidor ----
+window.enviarComprovante = file => new Promise((ok, falha) => {
+    const enviar = (nome, tipo, dados) => api('/api/comprovantes', { method: 'POST', body: JSON.stringify({ nome, tipo, dados }) }).then(ok, falha);
+    if (file.type === 'application/pdf') {
+        if (file.size > 1000000) return falha(new Error('PDF acima de 1 MB. Reduza o arquivo ou tire uma foto.'));
+        const r = new FileReader(); r.onload = () => enviar(file.name, file.type, r.result.split(',')[1]); return r.readAsDataURL(file);
+    }
+    if (!file.type.startsWith('image/')) return falha(new Error('Envie uma imagem ou um PDF.'));
+    const img = new Image();
+    img.onload = () => {
+        const f = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * f); c.height = Math.round(img.height * f);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(img.src);
+        enviar(file.name.replace(/\.\w+$/, '') + '.jpg', 'image/jpeg', c.toDataURL('image/jpeg', 0.75).split(',')[1]);
+    };
+    img.onerror = () => falha(new Error('Não foi possível ler esta imagem.'));
+    img.src = URL.createObjectURL(file);
+});
+window.linkComprovante = (id, nome) => id ? `<a href="/api/comprovantes/${esc(id)}" target="_blank" rel="noopener">📎 ${esc(nome || 'Ver')}</a>` : '';
+window.fmtCPF = v => String(v || '').replace(/\D/g, '').slice(0, 11)
+    .replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+window.mascaraCPF = el => el.addEventListener('input', () => { el.value = fmtCPF(el.value); });

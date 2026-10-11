@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from flask import Blueprint, jsonify, request
 
 from autenticacao.decoradores import login_obrigatorio
+from servicos.pagamentos import pagamentos_de
 from servicos.firebase_service import referencia
 
 bp = Blueprint("api_relatorios", __name__, url_prefix="/api/relatorios")
@@ -51,18 +52,18 @@ def relatorio():
         n_res += 1
         rec_ano += r["valor_total"] * parte
         recebido += r["valor_pago"] * parte
-        if r["valor_pago"] > 0:
-            formas[r.get("forma_pagamento") or "outros"] += r["valor_pago"] * parte
+        for pg in pagamentos_de(r):
+            formas[pg.get("forma") or "outros"] += pg["valor"] * parte
         for alvo in (por_origem[r["origem"]], por_quarto.get(r["quarto_id"])):
             if alvo is not None:
                 alvo["reservas"] += 1
                 alvo["noites"] += no_ano
                 alvo["receita"] += r["valor_total"] * parte
 
-    custo_mes, por_categoria = [0.0] * 12, defaultdict(float)
+    custo_mes, gastos = [0.0] * 12, defaultdict(float)
     for c in custos:
         custo_mes[int(c["data"][5:7]) - 1] += c["valor"]
-        por_categoria[c["categoria"]] += c["valor"]
+        gastos[c["descricao"].strip().lower().capitalize()] += c["valor"]
 
     n_quartos = len(quartos) or 1
     dias_mes = [calendar.monthrange(ano, m)[1] for m in range(1, 13)]
@@ -84,5 +85,5 @@ def relatorio():
             "sazonalidade": sazonalidade,
         },
         "por_quarto": sorted(por_quarto.values(), key=lambda x: -x["reservas"]),
-        "por_origem": por_origem, "formas_pagamento": formas, "custos_por_categoria": por_categoria,
+        "por_origem": por_origem, "formas_pagamento": formas, "maiores_gastos": dict(sorted(gastos.items(), key=lambda g: -g[1])[:8]),
     })

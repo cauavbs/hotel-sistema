@@ -36,7 +36,7 @@ async function carregar() {
         grafico('Receita por quarto (R$)', 'bar', d.por_quarto.map(q => q.quarto), [{ label: 'Receita', data: d.por_quarto.map(q => q.receita), backgroundColor: '#0f766e' }]);
         pizza('Receita por origem (R$)', Object.fromEntries(Object.entries(d.por_origem).map(([o, v]) => [NOMES_ORIGEM[o], v.receita])));
         pizza('Formas de pagamento (R$ recebido)', d.formas_pagamento);
-        pizza('Custos por categoria (R$)', d.custos_por_categoria);
+        grafico('Maiores gastos (R$)', 'bar', Object.keys(d.maiores_gastos), [{ label: 'Gasto', data: Object.values(d.maiores_gastos), backgroundColor: '#ef4444' }], { indexAxis: 'y', plugins: { legend: { display: false } } });
     } catch (e) { mostrarAlerta(e.message); }
 }
 anoSel.onchange = carregar;

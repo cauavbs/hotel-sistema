@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block titulo %}Calendário Anual - Hotel{% endblock %}
+{% block cabecalho %}Calendário Anual{% endblock %}
+{% block conteudo %}
+<section class="card full-width">
+    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div><label>Ano</label>
+            <div class="nav-mes"><button type="button" id="ano-ant" aria-label="Ano anterior">‹</button>
+            <input id="ano" type="number" min="2000" max="2100"><button type="button" id="ano-prox" aria-label="Próximo ano">›</button></div></div>
+        <div style="flex:1;min-width:180px;"><label>Quarto</label><select id="f-quarto"><option value="">Todos os quartos</option></select></div>
+    </div>
+    <div class="legenda" id="legenda"></div>
+    <p style="font-size:.85rem;color:#64748b;">Toque num dia para ver quem está hospedado e quais quartos estão livres.</p>
+    <div id="detalhe" class="detalhe-dia" hidden></div>
+    <div class="ano-grade" id="meses"></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/anual.js') }}"></script>{% endblock %}

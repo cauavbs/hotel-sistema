@@ -30,6 +30,7 @@ def create_app() -> Flask:
             return jsonify({"erro": "Não foi possível falar com o banco de dados agora. Tente novamente."}), 503
         raise erro
 
+    from api.comprovantes import bp as bp_comprovantes
     from api.custos import bp as bp_custos
     from api.quartos import bp as bp_quartos
     from api.relatorios import bp as bp_relatorios
@@ -37,7 +38,7 @@ def create_app() -> Flask:
     from autenticacao.rotas import bp as bp_auth
     from paginas.rotas import bp as bp_paginas
 
-    for bp in (bp_auth, bp_paginas, bp_quartos, bp_reservas, bp_custos, bp_relatorios):
+    for bp in (bp_auth, bp_paginas, bp_quartos, bp_reservas, bp_custos, bp_relatorios, bp_comprovantes):
         app.register_blueprint(bp)
     return app
 
