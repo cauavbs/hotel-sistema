@@ -26,3 +26,8 @@ document.getElementById('form-login').addEventListener('submit', async function 
         erroEl.style.display = 'block';
     }
 });
+
+// Registra o aplicativo (service worker) para instalação na tela inicial
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => { }); });
+}

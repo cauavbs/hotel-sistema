@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 from autenticacao.decoradores import login_obrigatorio
 from servicos.datas import br, noites
 from servicos.firebase_service import referencia
+from servicos.trava import trava_quarto
 from servicos.pagamentos import (apagar_comprovantes, cpf_valido, ids_comprovantes,
                                  pagamentos_de, so_digitos)
 
@@ -125,23 +126,27 @@ def listar():
 @bp.post("")
 @login_obrigatorio
 def criar():
-    dados, erro = _validar(request.get_json(silent=True) or {})
-    if erro:
-        return jsonify({"erro": erro}), _codigo(erro)
-    ref = referencia("reservas").push(dados)
+    corpo = request.get_json(silent=True) or {}
+    with trava_quarto(corpo.get("quarto_id")):   # confere e grava sem outro administrador no meio
+        dados, erro = _validar(corpo)
+        if erro:
+            return jsonify({"erro": erro}), _codigo(erro)
+        ref = referencia("reservas").push(dados)
     return jsonify(_saida(ref.key, dados)), 201
 
 
 @bp.put("/<rid>")
 @login_obrigatorio
 def atualizar(rid):
-    antiga = referencia(f"reservas/{rid}").get()
-    if not antiga:
-        return jsonify({"erro": "Reserva não encontrada."}), 404
-    dados, erro = _validar(request.get_json(silent=True) or {}, ignorar=rid)
-    if erro:
-        return jsonify({"erro": erro}), _codigo(erro)
-    referencia(f"reservas/{rid}").set(dados)
+    corpo = request.get_json(silent=True) or {}
+    with trava_quarto(corpo.get("quarto_id")):
+        antiga = referencia(f"reservas/{rid}").get()
+        if not antiga:
+            return jsonify({"erro": "Reserva não encontrada."}), 404
+        dados, erro = _validar(corpo, ignorar=rid)
+        if erro:
+            return jsonify({"erro": erro}), _codigo(erro)
+        referencia(f"reservas/{rid}").set(dados)
     apagar_comprovantes(ids_comprovantes(antiga) - ids_comprovantes(dados))  # removidos da reserva
     return jsonify(_saida(rid, dados))
 

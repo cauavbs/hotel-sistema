@@ -710,3 +710,21 @@ header h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-
     .btn-add { width: 100%; }
     .ad { min-height: 40px; }
 }
+
+/* ===== Histórico ===== */
+.abas-hist { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 12px; }
+.abas-hist button { width: auto; margin: 0; padding: 8px 14px; min-height: 42px; background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; font-size: .9rem; }
+.abas-hist button.ativa { background: #0f766e; color: #fff; border-color: #0f766e; }
+.abas-hist small { margin-left: 6px; opacity: .8; }
+details.res { border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; margin-bottom: 10px; }
+details.res summary { list-style: none; cursor: pointer; padding: 12px 14px; display: grid; gap: 4px; }
+details.res summary::-webkit-details-marker { display: none; }
+details.res[open] summary { border-bottom: 1px solid #f1f5f9; }
+.r-topo { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.r-sub { color: #64748b; font-size: .88rem; }
+.r-corpo { padding: 4px 14px 14px; font-size: .92rem; }
+.r-corpo h4 { margin: 12px 0 4px; font-size: .9rem; color: #115e59; }
+.r-corpo ul { margin: 0; padding-left: 18px; }
+.det-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 16px; margin: 10px 0; }
+.r-cancelada { opacity: .6; }
+.selo.cancelada { background: #e2e8f0; color: #475569; }

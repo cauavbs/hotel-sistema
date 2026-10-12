@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block titulo %}Relatórios - Hotel{% endblock %}
 {% block cabecalho %}Relatórios e Gráficos{% endblock %}
-{% block head_extra %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3"></script>{% endblock %}
+{% block head_extra %}<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>{% endblock %}
 {% block conteudo %}
 <section class="card full-width">
     <label for="ano">📅 Ano:</label><select id="ano" style="max-width:160px;"></select>

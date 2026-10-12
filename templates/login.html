@@ -152,16 +152,5 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-
-    <!-- SCRIPT DO APLICATIVO (SERVICE WORKER) -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(() => console.log('App Registrado com sucesso!'))
-                    .catch(err => console.log('Falha ao registrar o App: ', err));
-            });
-        }
-    </script>
 </body>
 </html>
