@@ -53,17 +53,12 @@ def _validar(c, ignorar=None):
         return None, "O valor total não pode ser negativo."
 
     cpf = so_digitos(c.get("cpf"))
-    if cpf and not cpf_valido(cpf):
-        return None, "CPF do hóspede inválido."
-
     acompanhantes = []
     for a in c.get("acompanhantes") or []:
         n = (a.get("nome") or "").strip()
         if not n:
             continue
         cp = so_digitos(a.get("cpf"))
-        if cp and not cpf_valido(cp):
-            return None, f"CPF de {n} inválido."
         acompanhantes.append({"nome": n, "cpf": cp})
     pessoas = 1 + len(acompanhantes)
     if pessoas > quarto.get("capacidade", 99):

@@ -25,7 +25,6 @@ def test_reserva_com_acompanhantes_e_pagamentos(logado, quartos):
 
 
 @pytest.mark.parametrize("extra,msg", [
-    ({"cpf": "123.456.789-00"}, "CPF do hóspede inválido"),
     ({"acompanhantes": [{"nome": "A"}, {"nome": "B"}, {"nome": "C"}]}, "comporta até"),
     ({"valor_total": 100, "pagamentos": [{"valor": 200, "forma": "pix"}]}, "não pode passar"),
     ({"pagamentos": [{"valor": 10, "forma": "pix", "comprovante_id": "nao-existe"}]}, "comprovante"),
