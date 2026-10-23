@@ -1,6 +1,6 @@
 const $ = id => document.getElementById(id);
 let quartos = [];
-$('data').value = new Date().toISOString().slice(0, 10);
+$('data').value = hojeLocal();
 $('f-mes').value = mesAtual();
 
 async function listar() {
@@ -17,8 +17,7 @@ $('lista').addEventListener('click', async e => {
     const b = e.target.closest('button'); if (!b || !await mostrarConfirmacao('Excluir este gasto e o comprovante?')) return;
     try { await api('/api/custos/' + b.dataset.id, { method: 'DELETE' }); listar(); } catch (err) { mostrarAlerta(err.message); }
 });
-$('form').addEventListener('submit', async e => {
-    e.preventDefault();
+$('form').addEventListener('submit', e => comTrava(e, async () => {
     const corpo = Object.fromEntries(['data', 'descricao', 'valor', 'quarto_id'].map(c => [c, $(c).value]));
     try {
         const arq = $('arquivo').files[0];
@@ -26,7 +25,7 @@ $('form').addEventListener('submit', async e => {
         await api('/api/custos', { method: 'POST', body: JSON.stringify(corpo) });
         $('descricao').value = ''; $('valor').value = ''; $('arquivo').value = ''; $('arq-info').textContent = ''; listar();
     } catch (err) { $('arq-info').textContent = ''; mostrarAlerta(err.message); }
-});
+}));
 $('f-mes').onchange = listar;
 (async () => {
     quartos = await api('/api/quartos');

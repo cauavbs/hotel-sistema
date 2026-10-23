@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Hoje - Hotel{% endblock %}
+{% block cabecalho %}Hoje{% endblock %}
+{% block conteudo %}
+<section class="card full-width">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <h2 id="data-hoje" style="margin:0"></h2>
+        <a href="/reservas" class="btn-link">+ Nova reserva</a>
+    </div>
+    <div class="kpis" id="kpis" style="margin-top:16px"></div>
+    <small id="sync-status" style="color:#64748b"></small>
+</section>
+<section class="card full-width atencao" id="atencao" hidden></section>
+<section class="card full-width"><h2>Quartos agora</h2><div id="quartos" class="quartos-hoje"></div></section>
+<div class="grade-hoje">
+    <section class="card"><h2>Chegadas</h2><div id="chegadas"></div></section>
+    <section class="card"><h2>Saídas</h2><div id="saidas"></div></section>
+    <section class="card"><h2>Na casa</h2><div id="nacasa"></div></section>
+    <section class="card"><h2>Saldos a receber</h2><div id="saldos"></div></section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/hoje.js') }}"></script>{% endblock %}

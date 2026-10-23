@@ -1,6 +1,38 @@
+
+# Segredos e configurações locais
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 firebase-credentials.json
-__pycache__/
-*.pyc
+*service-account*.json
+
+# Ambientes Python
 venv/
 .venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Dados privados e backups
+backups/
+backup/
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.dump
+
+# Uploads e comprovantes de hóspedes
+uploads/
+comprovantes/
+comprovantes/**
+*.pdf
+
+# Arquivos do sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/

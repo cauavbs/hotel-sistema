@@ -2,6 +2,7 @@ const $ = id => document.getElementById(id);
 const CAMPOS = ['quarto_id', 'checkin', 'checkout', 'origem', 'hospede', 'cpf', 'telefone', 'valor_total', 'status', 'observacao'];
 const FORMAS = { pix: 'Pix', dinheiro: 'Dinheiro', debito: 'Débito', credito: 'Crédito', plataforma: 'Repasse da plataforma' };
 let editando = null, quartos = [], reservas = [];
+const DIA = new URLSearchParams(location.search).get('dia');
 mascaraCPF($('cpf'));
 
 // ---------- linhas dinâmicas: acompanhantes e pagamentos ----------
@@ -78,26 +79,25 @@ function corpoForm() {
     return corpo;
 }
 
-$('form').addEventListener('submit', async e => {
-    e.preventDefault();
+$('form').addEventListener('submit', e => comTrava(e, async () => {
     try {
         await api(editando ? '/api/reservas/' + editando : '/api/reservas', { method: editando ? 'PUT' : 'POST', body: JSON.stringify(corpoForm()) });
         limpar(); listar(); mostrarAlerta('Reserva salva!');
     } catch (err) { mostrarAlerta(err.message); }
-});
+}));
 $('cancelar-edicao').onclick = limpar;
 
 // ---------- lista ----------
 async function listar() {
     const p = new URLSearchParams();
-    if ($('f-mes').value) p.set('mes', $('f-mes').value);
+    if (DIA) p.set('dia', DIA); else if ($('f-mes').value) p.set('mes', $('f-mes').value);
     reservas = await api('/api/reservas?' + p);
     const nome = id => (quartos.find(q => q.id === id) || {}).numero || '?';
     const o = $('f-origem').value, s = $('f-situacao').value;
     $('lista').innerHTML = reservas.filter(r => (!o || r.origem === o) && (!s || r.situacao === s)).map(r => `
         <tr style="${r.status === 'cancelada' ? 'opacity:.5;text-decoration:line-through;' : ''}">
             <td data-label="Quarto">${esc(nome(r.quarto_id))}</td>
-            <td data-label="Hóspede">${esc(r.hospede)}${r.acompanhantes.length ? ` <small>(+${r.acompanhantes.length})</small>` : ''}</td>
+            <td data-label="Hóspede">${esc(r.hospede)}${r.acompanhantes.length ? ` <small>(+${r.acompanhantes.length})</small>` : ''}${r.incompleta ? ' <small class="tag-imp">⚠ completar</small>' : ''}${r.conflito ? ' <small class="tag-conf">conflito</small>' : ''}</td>
             <td data-label="Período">${dataBR(r.checkin)} → ${dataBR(r.checkout)} (${r.noites}n)</td><td data-label="Origem">${NOMES_ORIGEM[r.origem]}</td>
             <td data-label="Total">${brl(r.valor_total)}</td><td data-label="Pago">${brl(r.valor_pago)}</td>
             <td data-label="Pagamento"><span class="selo ${r.situacao}">${r.situacao}</span> ${[...new Set(r.pagamentos.map(p => FORMAS[p.forma] || p.forma))].join(', ')}
@@ -113,7 +113,7 @@ $('lista').addEventListener('click', async e => {
     const r = reservas.find(x => x.id === b.dataset.id);
     try {
         if (b.dataset.a === 'editar') editar(r);
-        if (b.dataset.a === 'excluir' && await mostrarConfirmacao('Excluir esta reserva e os comprovantes dela?')) { await api('/api/reservas/' + r.id, { method: 'DELETE' }); listar(); }
+        if (b.dataset.a === 'excluir' && await mostrarConfirmacao('Mover esta reserva para a lixeira? Dá para restaurar depois, na aba Histórico.')) { await api('/api/reservas/' + r.id, { method: 'DELETE' }); listar(); }
         if (b.dataset.a === 'quitar') {      // lança o saldo como novo pagamento; o comprovante pode ser anexado depois em Editar
             const forma = (await mostrarPrompt('Forma de pagamento do saldo (pix, dinheiro, debito, credito ou plataforma):', 'pix') || '').trim().toLowerCase();
             if (!forma) return;
@@ -130,5 +130,6 @@ $('lista').addEventListener('click', async e => {
     await listar(); resumo();
     const p = new URLSearchParams(location.search);
     if (p.get('editar')) { const r = reservas.find(x => x.id === p.get('editar')) || (await api('/api/reservas')).find(x => x.id === p.get('editar')); if (r) editar(r); }
-    if (p.get('quarto')) { $('quarto_id').value = p.get('quarto'); $('checkin').value = p.get('checkin') || ''; }
+    if (p.get('quarto')) { $('quarto_id').value = p.get('quarto'); $('checkin').value = p.get('checkin') || ''; $('checkout').value = p.get('checkout') || ''; }
+    if (DIA) { $('faixa-dia').hidden = false; $('faixa-dia').innerHTML = `Mostrando as reservas de <b>${dataBR(DIA)}</b>. <a href="/reservas">Ver todas</a> · <a href="/reservas?quarto=${quartos[0] ? quartos[0].id : ''}&checkin=${DIA}&checkout=${somarDias(DIA, 1)}">Nova reserva neste dia</a>`; }
 })().catch(e => mostrarAlerta(e.message));

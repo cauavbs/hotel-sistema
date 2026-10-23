@@ -10,9 +10,9 @@ function somarMes(n) {
 
 async function carregar() {
     try {
-        const [quartos, reservas] = await Promise.all([api('/api/quartos'), api('/api/reservas?mes=' + mesEl.value)]);
+        const [quartos, reservas, bloqueios] = await Promise.all([api('/api/quartos'), api('/api/reservas?mes=' + mesEl.value), api('/api/indisponiveis?mes=' + mesEl.value)]);
         const [a, m] = mesEl.value.split('-').map(Number), dias = new Date(a, m, 0).getDate();
-        const hoje = new Date().toISOString().slice(0, 10), pad = d => `${mesEl.value}-${String(d).padStart(2, '0')}`;
+        const hoje = hojeLocal(), pad = d => `${mesEl.value}-${String(d).padStart(2, '0')}`;
         const fimMes = pad(dias);
         let h = '<thead><tr><th class="q">Quarto</th>';
         for (let d = 1; d <= dias; d++) {
@@ -31,6 +31,11 @@ async function carregar() {
                     const span = Math.max(1, ultimo - d + 1);
                     h += `<td class="dia ${r.origem} ${r.situacao !== 'pago' ? 'pendente' : ''}" colspan="${span}" data-r="${r.id}" title="${esc(r.hospede)} · ${dataBR(r.checkin)} a ${dataBR(r.checkout)} · ${NOMES_ORIGEM[r.origem]} · ${r.situacao}"><span>${esc(r.hospede.split(' ')[0])}</span></td>`;
                     d += span;
+                } else if (bloqueios.some(b => b.quarto_id === q.id && b.inicio <= iso && iso < b.fim)) {
+                    const b = bloqueios.find(b => b.quarto_id === q.id && b.inicio <= iso && iso < b.fim);
+                    const span = Math.max(1, (b.fim > fimMes ? dias : Number(b.fim.slice(8)) - 1) - d + 1);
+                    h += `<td class="dia bloq" colspan="${span}" data-b="1" title="Bloqueado: ${esc(b.motivo_texto)} · ${dataBR(b.inicio)} a ${dataBR(b.fim)}"><span>${esc(b.motivo_texto)}</span></td>`;
+                    d += span;
                 } else {
                     h += `<td class="dia" data-q="${q.id}" data-d="${iso}"></td>`;
                     d++;
@@ -47,6 +52,7 @@ async function carregar() {
 document.getElementById('tabela').addEventListener('click', e => {
     const td = e.target.closest('td.dia');
     if (!td) return;
+    if (td.dataset.b) { location.href = '/quartos#bloqueios'; return; }
     location.href = td.dataset.r ? `/reservas?editar=${td.dataset.r}` : `/reservas?quarto=${td.dataset.q}&checkin=${td.dataset.d}`;
 });
 document.getElementById('mes-ant').onclick = () => somarMes(-1);

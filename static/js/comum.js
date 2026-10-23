@@ -2,7 +2,17 @@
 window.esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 window.brl = v => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 window.dataBR = iso => (iso || '').split('-').reverse().join('/');
-window.mesAtual = () => new Date().toISOString().slice(0, 7);
+window.hojeLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+window.mesAtual = () => hojeLocal().slice(0, 7);
+window.somarDias = (iso, n) => { const [a, m, d] = iso.split('-').map(Number), x = new Date(a, m - 1, d + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
+// Impede o duplo clique: o botão do formulário fica desabilitado até o envio terminar.
+window.comTrava = async (e, fn) => {
+    e.preventDefault();
+    const b = e.target.querySelector('button[type=submit], button:not([type])');
+    if (b && b.disabled) return;
+    if (b) b.disabled = true;
+    try { await fn(); } finally { if (b) b.disabled = false; }
+};
 window.NOMES_ORIGEM = { direto: 'Direto', airbnb: 'Airbnb', booking: 'Booking' };
 window.api = async (url, opts = {}) => {
     const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });

@@ -728,3 +728,29 @@ details.res[open] summary { border-bottom: 1px solid #f1f5f9; }
 .det-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 16px; margin: 10px 0; }
 .r-cancelada { opacity: .6; }
 .selo.cancelada { background: #e2e8f0; color: #475569; }
+
+/* ===== Hoje, bloqueios, navegação do calendário ===== */
+.btn-link { display: inline-block; padding: 10px 16px; border-radius: 8px; background: #0f766e; color: #fff; text-decoration: none; font-weight: 600; margin: 4px 6px 0 0; }
+.btn-link.sec { background: #f0fdfa; color: #115e59; border: 1px solid #0f766e; }
+.faixa { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 10px; padding: 10px 14px; margin: 8px 0 12px; }
+.cal td.bloq { background: repeating-linear-gradient(45deg, #94a3b8, #94a3b8 6px, #64748b 6px, #64748b 12px); color: #fff; }
+.grade-hoje { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 18px; width: 100%; }
+.quartos-hoje { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.qh { border: 1px solid #e2e8f0; border-left: 8px solid #16a34a; border-radius: 12px; padding: 12px; background: #fff; display: grid; gap: 6px; }
+.qh.ocup { border-left-color: #ef4444; } .qh.saida { border-left-color: #f59e0b; } .qh.bloq { border-left-color: #64748b; }
+.qh-topo { display: flex; flex-direction: column; gap: 2px; } .qh-topo b { font-size: 1.3rem; } .qh-topo span { font-size: .9rem; color: #334155; }
+.qh small { color: #64748b; } .qh .aviso { color: #b45309; }
+.limp { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; font-size: .9rem; } .limp select { width: auto; min-height: 40px; }
+.linha-hoje { display: grid; gap: 2px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-decoration: none; color: inherit; }
+.linha-hoje span { color: #64748b; font-size: .88rem; }
+.sub-hoje { font-weight: 600; color: #115e59; margin: 6px 0 2px; font-size: .9rem; }
+
+/* ===== Airbnb e Booking ===== */
+.ical-quarto .ical-canal { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9; }
+.ical-canal h3 { margin: 0 0 8px; font-size: 1rem; color: #115e59; }
+.copiar { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; } .copiar input { flex: 1; min-width: 0; font-size: .8rem !important; background: #f8fafc; }
+.copiar .btn-mini { flex: 0 0 auto; margin: 0 !important; }
+.estado { display: block; margin-top: 6px; color: #475569; word-break: break-word; }
+details.ajuda { padding: 14px 18px; } details.ajuda summary { cursor: pointer; }
+.tag-imp { background: #fef3c7; color: #92400e; padding: 1px 7px; border-radius: 99px; } .tag-conf { background: #fee2e2; color: #991b1b; padding: 1px 7px; border-radius: 99px; }
+.atencao { border-top: 5px solid #f59e0b; }

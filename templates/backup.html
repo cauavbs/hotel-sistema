@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block titulo %}Exportar e Backup - Hotel{% endblock %}
+{% block cabecalho %}Exportar e Backup{% endblock %}
+{% block conteudo %}
+<section class="card full-width">
+    <h2>📊 Exportar para Excel</h2>
+    <p style="margin-top:0">Arquivos CSV que abrem direto no Excel ou no Google Planilhas.</p>
+    <label style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" id="pessoais" style="width:auto;min-height:0"> Incluir CPF, telefone e acompanhantes (dados pessoais: guarde o arquivo com cuidado)</label>
+    <a id="l-reservas" class="btn-link" href="/api/exportar/reservas.csv">Baixar reservas</a>
+    <a class="btn-link" href="/api/exportar/custos.csv">Baixar insumos e custos</a>
+</section>
+<section class="card full-width">
+    <h2>💾 Backup</h2>
+    <p style="margin-top:0"><b>Pelo site:</b> baixa todos os dados (quartos, reservas, gastos e bloqueios) em um arquivo JSON, sem os arquivos de comprovante.</p>
+    <a class="btn-link sec" href="/api/exportar/backup.json">Baixar backup dos dados</a>
+    <p><b>Backup completo, com os comprovantes:</b> no computador onde o sistema está instalado, rode no terminal
+    <code>python3 backup.py</code>. Ele cria uma pasta em <code>backups/</code> com os dados e todos os comprovantes. Guarde uma cópia fora do computador (pen drive ou nuvem).</p>
+</section>
+<section class="card full-width">
+    <h2>🧹 Manutenção</h2>
+    <p style="margin-top:0">Apaga comprovantes que nenhuma reserva ou gasto usa (arquivos anexados e depois abandonados). Só considera os enviados há mais de 24 horas.</p>
+    <button type="button" id="limpar" style="width:auto">Limpar comprovantes sem uso</button>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/backup.js') }}"></script>{% endblock %}

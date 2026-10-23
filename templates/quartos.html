@@ -13,5 +13,19 @@
 <section class="card full-width"><h2>Quartos cadastrados</h2>
     <div class="rolagem"><table class="tabela cartoes"><thead><tr><th>Número</th><th>Nome / tipo</th><th>Capacidade</th><th></th></tr></thead><tbody id="lista"></tbody></table></div>
 </section>
+<section class="card full-width" id="bloqueios" style="border-top:5px solid #64748b;">
+    <h2>🔒 Bloquear datas</h2>
+    <p style="margin-top:0">Para manutenção, uso próprio ou qualquer período em que o quarto não pode receber hóspedes. Funciona como uma reserva sem hóspede.</p>
+    <form id="form-bloq"><div class="grade-form">
+        <div><label>Quarto</label><select id="b-quarto" required></select></div>
+        <div><label>De (primeira noite)</label><input type="date" id="b-inicio" required></div>
+        <div><label>Até (dia em que volta a ficar livre)</label><input type="date" id="b-fim" required></div>
+        <div><label>Motivo</label><select id="b-motivo"><option value="manutencao">Manutenção</option><option value="uso_proprio">Uso próprio</option><option value="outro">Outro</option></select></div>
+        <div><label>Observação</label><input id="b-obs" maxlength="200"></div>
+    </div><button type="submit" style="margin-top:18px;">Bloquear</button></form>
+</section>
+<section class="card full-width"><h2>Bloqueios</h2>
+    <div class="rolagem"><table class="tabela cartoes"><thead><tr><th>Quarto</th><th>Período</th><th>Motivo</th><th>Observação</th><th></th></tr></thead><tbody id="lista-bloq"></tbody></table></div>
+</section>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='js/quartos.js') }}"></script>{% endblock %}

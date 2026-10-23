@@ -11,6 +11,7 @@ O prazo certo depende das suas obrigações legais: confirme com o contador.
 import argparse
 from datetime import date, timedelta
 
+from servicos.datas import hoje_local
 from servicos.firebase_service import inicializar_firebase, referencia
 
 ap = argparse.ArgumentParser()
@@ -18,7 +19,7 @@ ap.add_argument("--meses", type=int, required=True, help="anonimiza reservas com
 ap.add_argument("--aplicar", action="store_true", help="grava de verdade (sem isso, só simula)")
 args = ap.parse_args()
 
-corte = (date.today() - timedelta(days=30 * args.meses)).isoformat()
+corte = (hoje_local() - timedelta(days=30 * args.meses)).isoformat()
 inicializar_firebase()
 alvo = [(i, r) for i, r in (referencia("reservas").get() or {}).items()
         if r["checkout"] < corte and not r.get("anonimizado")]

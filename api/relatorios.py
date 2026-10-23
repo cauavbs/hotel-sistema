@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from flask import Blueprint, jsonify, request
 
 from autenticacao.decoradores import login_obrigatorio
+from servicos.datas import hoje_local
 from servicos.pagamentos import pagamentos_de
 from servicos.firebase_service import referencia
 
@@ -20,12 +21,12 @@ bp = Blueprint("api_relatorios", __name__, url_prefix="/api/relatorios")
 @login_obrigatorio
 def relatorio():
     try:
-        ano = int(request.args.get("ano") or date.today().year)
+        ano = int(request.args.get("ano") or hoje_local().year)
     except ValueError:
         return jsonify({"erro": "Ano inválido."}), 400
 
     quartos = referencia("quartos").get() or {}
-    reservas = [r for r in (referencia("reservas").get() or {}).values() if r.get("status") != "cancelada"]
+    reservas = [r for r in (referencia("reservas").get() or {}).values() if r.get("status") != "cancelada" and not r.get("excluida_em")]
     custos = [c for c in (referencia("custos").get() or {}).values() if c["data"][:4] == str(ano)]
 
     receita, noites_mes, sazonalidade = [0.0] * 12, [0] * 12, [0] * 12

@@ -1,9 +1,9 @@
 const $ = id => document.getElementById(id);
 const hoje = new Date().toLocaleDateString('sv-SE');          // AAAA-MM-DD no horário local
 const FORMAS = { pix: 'Pix', dinheiro: 'Dinheiro', debito: 'Débito', credito: 'Crédito', plataforma: 'Repasse da plataforma', outros: 'Outros' };
-const ABAS = [['concluida', 'Concluídas'], ['andamento', 'Em andamento'], ['futura', 'Futuras'], ['cancelada', 'Canceladas'], ['todas', 'Todas']];
+const ABAS = [['concluida', 'Concluídas'], ['andamento', 'Em andamento'], ['futura', 'Futuras'], ['cancelada', 'Canceladas'], ['todas', 'Todas'], ['lixeira', 'Lixeira']];
 const ROTULO_FASE = { concluida: 'Concluída', andamento: 'Em andamento', futura: 'Futura', cancelada: 'Cancelada' };
-let aba = 'concluida', reservas = [], quartos = [];
+let aba = 'concluida', reservas = [], lixeira = [], quartos = [];
 
 const fase = r => r.status === 'cancelada' ? 'cancelada' : r.checkout <= hoje ? 'concluida' : r.checkin <= hoje ? 'andamento' : 'futura';
 const dig = s => String(s || '').replace(/\D/g, '');
@@ -21,7 +21,7 @@ function casaBusca(r, q) {
 const mesmaPessoa = (a, b) => (a.cpf && a.cpf === b.cpf) || (!a.cpf && dig(a.telefone) && dig(a.telefone) === dig(b.telefone) && norm(a.hospede) === norm(b.hospede));
 const estadiaNumero = r => 1 + reservas.filter(x => x.id !== r.id && x.status !== 'cancelada' && x.checkin < r.checkin && mesmaPessoa(r, x)).length;
 
-function cartao(r, mostrarFase) {
+function cartao(r, mostrarFase, naLixeira = false) {
     const n = estadiaNumero(r), acomp = r.acompanhantes.length;
     const pags = r.pagamentos.map(p => `<li>${brl(p.valor)} · ${FORMAS[p.forma] || esc(p.forma)} ${linkComprovante(p.comprovante_id, p.comprovante_nome)}</li>`).join('');
     return `<details class="res ${r.status === 'cancelada' ? 'r-cancelada' : ''}">
@@ -38,25 +38,29 @@ function cartao(r, mostrarFase) {
             ${acomp ? `<h4>Acompanhantes</h4><ul>${r.acompanhantes.map(a => `<li>${esc(a.nome)}${a.cpf ? ' · CPF ' + esc(fmtCPF(a.cpf)) : ''}</li>`).join('')}</ul>` : ''}
             ${pags ? `<h4>Pagamentos e comprovantes</h4><ul>${pags}</ul>` : ''}
             ${r.observacao ? `<h4>Observações</h4><p style="margin:0">${esc(r.observacao)}</p>` : ''}
-            <p style="margin:12px 0 0"><a href="/reservas?editar=${esc(r.id)}">✏️ Editar reserva</a></p>
+            ${naLixeira ? `<p style="margin:12px 0 0;color:#64748b">Na lixeira desde ${esc((r.excluida_em || '').slice(0, 10).split('-').reverse().join('/'))}.</p>
+            <p style="margin:8px 0 0"><button class="btn-mini" data-a="restaurar" data-id="${esc(r.id)}">Restaurar</button>
+                <button class="btn-mini" style="background:#ef4444" data-a="definitivo" data-id="${esc(r.id)}">Excluir de vez</button></p>`
+        : `<p style="margin:12px 0 0"><a href="/reservas?editar=${esc(r.id)}">✏️ Editar reserva</a></p>`}
         </div></details>`;
 }
 
 function desenhar() {
     const q = $('busca').value.trim(), ano = $('f-ano').value, qto = $('f-quarto').value;
-    const base = reservas.filter(r => casaBusca(r, q) && (!ano || r.checkin.slice(0, 4) === ano) && (!qto || r.quarto_id === qto));
+    const filtra = lista => lista.filter(r => casaBusca(r, q) && (!ano || r.checkin.slice(0, 4) === ano) && (!qto || r.quarto_id === qto));
+    const base = filtra(reservas), baseLix = filtra(lixeira);
 
-    $('abas').innerHTML = ABAS.map(([k, t]) => `<button type="button" data-f="${k}" class="${k === aba ? 'ativa' : ''}">${t}<small>${k === 'todas' ? base.length : base.filter(r => fase(r) === k).length}</small></button>`).join('');
+    $('abas').innerHTML = ABAS.map(([k, t]) => `<button type="button" data-f="${k}" class="${k === aba ? 'ativa' : ''}">${t}<small>${k === 'todas' ? base.length : k === 'lixeira' ? baseLix.length : base.filter(r => fase(r) === k).length}</small></button>`).join('');
 
-    const lista = (aba === 'todas' ? base : base.filter(r => fase(r) === aba)).sort((a, b) =>
+    const lista = (aba === 'lixeira' ? baseLix : aba === 'todas' ? base : base.filter(r => fase(r) === aba)).sort((a, b) =>
         aba === 'futura' ? a.checkin.localeCompare(b.checkin) : aba === 'concluida' ? b.checkout.localeCompare(a.checkout) : b.checkin.localeCompare(a.checkin));
 
     const v = lista.filter(r => r.status !== 'cancelada'), soma = f => v.reduce((s, r) => s + f(r), 0);
     const kpis = [['Reservas', lista.length]];
-    if (aba !== 'cancelada') kpis.push(['Noites', soma(r => r.noites)], ['Valor total', brl(soma(r => r.valor_total))], ['Recebido', brl(soma(r => r.valor_pago))], ['A receber', brl(soma(r => r.saldo))]);
+    if (aba !== 'cancelada' && aba !== 'lixeira') kpis.push(['Noites', soma(r => r.noites)], ['Valor total', brl(soma(r => r.valor_total))], ['Recebido', brl(soma(r => r.valor_pago))], ['A receber', brl(soma(r => r.saldo))]);
     $('totais').innerHTML = kpis.map(([t, x]) => `<div class="kpi"><small>${t}</small><b>${x}</b></div>`).join('');
 
-    $('lista').innerHTML = lista.map(r => cartao(r, aba === 'todas')).join('') || '<p style="color:#64748b">Nenhuma reserva encontrada com estes filtros.</p>';
+    $('lista').innerHTML = lista.map(r => cartao(r, aba === 'todas', aba === 'lixeira')).join('') || '<p style="color:#64748b">Nenhuma reserva encontrada com estes filtros.</p>';
 }
 
 $('abas').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { aba = b.dataset.f; desenhar(); } });
@@ -65,9 +69,20 @@ $('f-ano').addEventListener('change', desenhar);
 $('f-quarto').addEventListener('change', desenhar);
 
 (async () => {
-    [quartos, reservas] = await Promise.all([api('/api/quartos'), api('/api/reservas')]);
+    [quartos, reservas, lixeira] = await Promise.all([api('/api/quartos'), api('/api/reservas'), api('/api/reservas?lixeira=1')]);
     const anos = [...new Set(reservas.map(r => r.checkin.slice(0, 4)))].sort().reverse();
     $('f-ano').innerHTML += anos.map(a => `<option>${a}</option>`).join('');
     $('f-quarto').innerHTML += quartos.map(q => `<option value="${q.id}">Quarto ${esc(q.numero)}</option>`).join('');
     desenhar();
 })().catch(e => mostrarAlerta(e.message));
+
+// ações da lixeira
+$('lista').addEventListener('click', async e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    try {
+        if (b.dataset.a === 'restaurar') await api(`/api/reservas/${b.dataset.id}/restaurar`, { method: 'POST' });
+        else if (await mostrarConfirmacao('Excluir de vez? A reserva e os comprovantes dela serão apagados e não dá para desfazer.')) await api(`/api/reservas/${b.dataset.id}?definitivo=1`, { method: 'DELETE' });
+        else return;
+        [reservas, lixeira] = await Promise.all([api('/api/reservas'), api('/api/reservas?lixeira=1')]); desenhar();
+    } catch (err) { mostrarAlerta(err.message); }
+});

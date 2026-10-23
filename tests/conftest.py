@@ -28,8 +28,9 @@ class Ref:
             n = n[k]
         return n
 
-    def get(self):
-        return copy.deepcopy(self._no())
+    def get(self, etag=False, shallow=False):
+        no = self._no()
+        return {k: True for k in no} if shallow and isinstance(no, dict) else copy.deepcopy(no)
 
     def set(self, v):
         pai = Ref("/".join(self.p[:-1]))._no(True) if len(self.p) > 1 else DB

@@ -1,6 +1,9 @@
 import os
+import uuid
 from datetime import timedelta
 
+import requests
+from firebase_admin.exceptions import FirebaseError
 from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException
 
@@ -49,20 +52,26 @@ def create_app() -> Flask:
     def erro_inesperado(erro):
         if isinstance(erro, HTTPException):
             return erro
-        app.logger.exception("Erro inesperado em %s", request.path)
+        codigo = uuid.uuid4().hex[:8]
+        app.logger.exception("[%s] Erro inesperado em %s", codigo, request.path)   # aparece nos Logs da Vercel
         if request.path.startswith("/api/"):
-            return jsonify({"erro": "Não foi possível falar com o banco de dados agora. Tente novamente."}), 503
+            if isinstance(erro, (FirebaseError, requests.exceptions.RequestException, ConnectionError, TimeoutError)):
+                return jsonify({"erro": "Não foi possível falar com o banco de dados agora. Tente novamente.", "codigo": codigo}), 503
+            return jsonify({"erro": f"Erro interno do sistema (código {codigo}). Tente de novo e, se repetir, avise o suporte com este código.", "codigo": codigo}), 500
         raise erro
 
     from api.comprovantes import bp as bp_comprovantes
     from api.custos import bp as bp_custos
+    from api.exportar import bp as bp_exportar
+    from api.ical import bp as bp_ical
+    from api.indisponiveis import bp as bp_indisponiveis
     from api.quartos import bp as bp_quartos
     from api.relatorios import bp as bp_relatorios
     from api.reservas import bp as bp_reservas
     from autenticacao.rotas import bp as bp_auth
     from paginas.rotas import bp as bp_paginas
 
-    for bp in (bp_auth, bp_paginas, bp_quartos, bp_reservas, bp_custos, bp_relatorios, bp_comprovantes):
+    for bp in (bp_auth, bp_paginas, bp_quartos, bp_reservas, bp_custos, bp_relatorios, bp_comprovantes, bp_indisponiveis, bp_exportar, bp_ical):
         app.register_blueprint(bp)
     return app
 

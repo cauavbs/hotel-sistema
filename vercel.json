@@ -1,1 +1,2 @@
-{ "builds": [{ "src": "app.py", "use": "@vercel/python" }], "routes": [{ "src": "/(.*)", "dest": "app.py" }] }
+{ "builds": [{ "src": "app.py", "use": "@vercel/python" }], "routes": [{ "src": "/(.*)", "dest": "app.py" }],
+  "crons": [{ "path": "/api/cron/ical", "schedule": "0 10 * * *" }] }

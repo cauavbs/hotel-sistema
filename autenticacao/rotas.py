@@ -23,7 +23,7 @@ def ip_cliente():
 @bp.get("/login")
 def pagina_login():
     if session.get("uid"):
-        return redirect(url_for("paginas.calendario"))
+        return redirect(url_for("paginas.hoje"))
     return render_template("login.html")
 
 

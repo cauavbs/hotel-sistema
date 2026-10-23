@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 from autenticacao.decoradores import login_obrigatorio
 from servicos.firebase_service import referencia
 from servicos.pagamentos import apagar_comprovantes
+from servicos.validacao import dinheiro, texto
 
 bp = Blueprint("api_custos", __name__, url_prefix="/api/custos")
 
@@ -28,12 +29,15 @@ def criar():
     c = request.get_json(silent=True) or {}
     try:
         data = date.fromisoformat(c.get("data") or "").isoformat()
-        valor = float(c.get("valor"))
-    except (TypeError, ValueError):
-        return jsonify({"erro": "Confira a data e o valor."}), 400
-    descricao = (c.get("descricao") or "").strip()
-    if not descricao or valor < 0:
-        return jsonify({"erro": "Escreva o que foi o gasto e informe um valor válido."}), 400
+    except ValueError:
+        return jsonify({"erro": "Confira a data."}), 400
+    try:
+        valor = dinheiro(c.get("valor"), "Valor")
+        descricao = texto(c.get("descricao"), 200, "Descrição")
+    except ValueError as erro:
+        return jsonify({"erro": str(erro)}), 400
+    if not descricao:
+        return jsonify({"erro": "Escreva o que foi o gasto."}), 400
     novo = {"data": data, "descricao": descricao, "valor": valor,
             "quarto_id": c.get("quarto_id") or "", "comprovante_id": "", "comprovante_nome": ""}
     if c.get("comprovante_id"):
