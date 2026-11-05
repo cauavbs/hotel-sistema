@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}Histórico - Hotel{% endblock %}
+{% block cabecalho %}Histórico de Reservas{% endblock %}
+{% block conteudo %}
+<section class="card full-width">
+    <div class="grade-form">
+        <div><label for="busca">🔍 Buscar hóspede</label><input id="busca" type="search" placeholder="Nome, CPF ou telefone"></div>
+        <div><label for="f-ano">Ano (check-in)</label><select id="f-ano"><option value="">Todos os anos</option></select></div>
+        <div><label for="f-quarto">Quarto</label><select id="f-quarto"><option value="">Todos os quartos</option></select></div>
+    </div>
+    <div class="abas-hist" id="abas"></div>
+    <div class="kpis" id="totais"></div>
+    <div id="lista"></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/historico.js') }}"></script>{% endblock %}
