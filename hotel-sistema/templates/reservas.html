@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block titulo %}Reservas - Hotel{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+<section class="card full-width" style="border-top:5px solid #0f766e;">
+    <h2 id="titulo-form">📝 Nova Reserva</h2>
+    <form id="form">
+        <h3 class="sub">Hóspede principal</h3>
+        <div class="grade-form">
+            <div><label>Nome completo</label><input id="hospede" required></div>
+            <div><label>CPF</label><input id="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14"></div>
+            <div><label>Telefone / WhatsApp</label><input id="telefone" type="tel" inputmode="tel"></div>
+        </div>
+
+        <h3 class="sub">Reserva</h3>
+        <div class="grade-form">
+            <div><label>🛏️ Quarto</label><select id="quarto_id" required></select></div>
+            <div><label>Check-in</label><input type="date" id="checkin" required></div>
+            <div><label>Check-out</label><input type="date" id="checkout" required></div>
+            <div><label>Origem</label>
+                <select id="origem"><option value="direto">Aluguel direto</option><option value="airbnb">Airbnb</option><option value="booking">Booking</option></select></div>
+            <div><label>💰 Valor total (R$)</label><input type="number" id="valor_total" min="0" step="0.01" required></div>
+            <div><label>Situação</label><select id="status"><option value="confirmada">Confirmada</option><option value="cancelada">Cancelada</option></select></div>
+        </div>
+
+        <h3 class="sub">Acompanhantes</h3>
+        <div id="acomp"></div>
+        <button type="button" id="add-acomp" class="btn-add">+ Adicionar acompanhante</button>
+
+        <h3 class="sub">Pagamentos e comprovantes</h3>
+        <div id="pags"></div>
+        <button type="button" id="add-pag" class="btn-add">+ Adicionar pagamento</button>
+        <p id="resumo-pag" class="resumo-pag"></p>
+
+        <div style="margin-top:12px;"><label>Observações</label><input id="observacao"></div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+            <button type="submit">Salvar reserva</button>
+            <button type="button" id="cancelar-edicao" class="ghost" style="display:none;background:#64748b;">Cancelar edição</button>
+        </div>
+    </form>
+</section>
+<section class="card full-width">
+    <h2>📋 Reservas</h2>
+    <div id="faixa-dia" class="faixa" hidden></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">
+        <input type="month" id="f-mes" title="Mês" style="max-width:180px;">
+        <select id="f-origem" style="max-width:180px;"><option value="">Todas as origens</option><option value="direto">Direto</option><option value="airbnb">Airbnb</option><option value="booking">Booking</option></select>
+        <select id="f-situacao" style="max-width:200px;"><option value="">Todos os pagamentos</option><option value="pago">Pago</option><option value="parcial">Parcial</option><option value="pendente">Pendente</option></select>
+    </div>
+    <div class="rolagem"><table class="tabela cartoes"><thead><tr><th>Quarto</th><th>Hóspede</th><th>Período</th><th>Origem</th><th>Total</th><th>Pago</th><th>Pagamento</th><th></th></tr></thead><tbody id="lista"></tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/reservas.js') }}"></script>{% endblock %}
