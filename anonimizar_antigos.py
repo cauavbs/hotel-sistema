@@ -9,7 +9,7 @@ Valores e comprovantes ficam, para a contabilidade. Por padrão só SIMULA.
 O prazo certo depende das suas obrigações legais: confirme com o contador.
 """
 import argparse
-from datetime import date, timedelta
+from datetime import timedelta
 
 from servicos.datas import hoje_local
 from servicos.firebase_service import inicializar_firebase, referencia

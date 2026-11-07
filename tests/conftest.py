@@ -33,10 +33,14 @@ class Ref:
         return {k: True for k in no} if shallow and isinstance(no, dict) else copy.deepcopy(no)
 
     def set(self, v):
+        if v is None:
+            raise ValueError("Value must not be None.")            # firebase_admin: Reference.set
         pai = Ref("/".join(self.p[:-1]))._no(True) if len(self.p) > 1 else DB
         pai[self.p[-1]] = copy.deepcopy(v)
 
     def update(self, campos):
+        if not campos or not isinstance(campos, dict):
+            raise ValueError("Value argument must be a non-empty dictionary.")   # firebase_admin: Reference.update
         for k, v in campos.items():
             Ref("/".join(self.p + [k])).delete() if v is None else Ref("/".join(self.p + [k])).set(v)
 
@@ -53,7 +57,9 @@ class Ref:
 
     def transaction(self, fn):
         novo = fn(self.get())          # uma exceção em fn aborta sem gravar, como no Firebase
-        self.delete() if novo is None else self.set(novo)
+        if novo is None:
+            raise ValueError("Value must not be none.")            # firebase_admin: set_if_unchanged não aceita None
+        self.set(novo)
         return novo
 
 

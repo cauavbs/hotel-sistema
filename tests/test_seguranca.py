@@ -21,6 +21,12 @@ def firebase_auth(monkeypatch):
     monkeypatch.setattr("autenticacao.rotas.requests.post", post)
 
 
+def trava_livre(db, quarto):
+    """True se a trava do quarto não está segurando ninguém (o Firebase real não deixa apagar numa transação: ela só vence)."""
+    atual = db.get("bloqueios", {}).get(quarto)
+    return not atual or atual.get("ate", 0) <= time.time()
+
+
 def entrar(c, email="a@b.com", senha="certa", ip="1.1.1.1"):
     return c.post("/login", json={"email": email, "senha": senha}, headers={"X-Forwarded-For": ip})
 
@@ -92,7 +98,7 @@ def test_trava_segura_o_segundo_administrador(banco_limpo, monkeypatch):
             pass
     with trava_quarto("q1", espera=0.3):          # liberada ao terminar
         pass
-    assert "q1" not in banco_limpo.get("bloqueios", {})
+    assert trava_livre(banco_limpo, "q1")
 
 
 def test_trava_expirada_nao_prende_ninguem(banco_limpo):
@@ -105,7 +111,7 @@ def test_trava_e_liberada_mesmo_com_erro(banco_limpo):
     with pytest.raises(ValueError):
         with trava_quarto("q1"):
             raise ValueError("falha")
-    assert "q1" not in banco_limpo.get("bloqueios", {})
+    assert trava_livre(banco_limpo, "q1")
 
 
 def test_reserva_recusada_com_409_se_outro_admin_esta_gravando(logado, banco_limpo, monkeypatch):
@@ -124,4 +130,25 @@ def test_conflito_continua_sendo_detectado_dentro_da_trava(logado, banco_limpo):
     r = logado.post("/api/reservas", json={**base, "checkin": "2026-12-02", "checkout": "2026-12-04"})
     assert r.status_code == 409 and r.json["erro"].startswith("Conflito")
     assert logado.post("/api/reservas", json={**base, "checkin": "2026-12-03", "checkout": "2026-12-05"}).status_code == 201
-    assert not banco_limpo.get("bloqueios")        # nenhuma trava ficou presa
+    assert all(trava_livre(banco_limpo, q) for q in banco_limpo.get("bloqueios", {}))   # nenhuma trava ficou presa
+
+
+def test_salvar_varias_vezes_seguidas_no_mesmo_quarto_nao_trava(logado, banco_limpo, monkeypatch):
+    """Regressão: a trava não era liberada de verdade no Firebase real, e o segundo salvamento esperava e falhava."""
+    monkeypatch.setattr(trava, "ESPERA", 0.3)
+    qid = logado.post("/api/quartos", json={"numero": "101", "capacidade": 2}).json["id"]
+    base = {"quarto_id": qid, "origem": "direto", "hospede": "Ana", "valor_total": 200}
+    rid = logado.post("/api/reservas", json={**base, "checkin": "2026-12-01", "checkout": "2026-12-03"}).json["id"]
+    assert logado.put(f"/api/reservas/{rid}", json={**base, "checkin": "2026-12-01", "checkout": "2026-12-03", "valor_total": 250}).status_code == 200
+    assert logado.post("/api/reservas", json={**base, "hospede": "Bia", "checkin": "2026-12-05", "checkout": "2026-12-06"}).status_code == 201
+    assert logado.post("/api/indisponiveis", json={"quarto_id": qid, "inicio": "2026-12-10", "fim": "2026-12-12", "motivo": "outro"}).status_code == 201
+
+
+def test_banco_simulado_segue_as_regras_do_firebase_real(banco_limpo):
+    from servicos.firebase_service import referencia
+    with pytest.raises(ValueError):
+        referencia("x").transaction(lambda atual: None)
+    with pytest.raises(ValueError):
+        referencia("x").update({})
+    with pytest.raises(ValueError):
+        referencia("x").set(None)

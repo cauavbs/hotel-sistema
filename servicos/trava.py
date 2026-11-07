@@ -51,7 +51,7 @@ def trava_quarto(quarto_id, espera=None):
     finally:
         def soltar(atual):
             if atual and atual.get("dono") == dono:
-                return None          # apaga a trava
+                return {"dono": "", "ate": 0}   # trava vencida (o Firebase não aceita gravar "nada" numa transação)
             raise _Segurada()
 
         try:

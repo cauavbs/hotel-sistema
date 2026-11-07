@@ -8,8 +8,7 @@ from servicos.datas import agora_iso, br, noites
 from servicos.firebase_service import referencia
 from servicos.trava import trava_quarto
 from servicos.validacao import dinheiro, texto
-from servicos.pagamentos import (apagar_comprovantes, cpf_valido, ids_comprovantes,
-                                 pagamentos_de, so_digitos)
+from servicos.pagamentos import apagar_comprovantes, ids_comprovantes, pagamentos_de, so_digitos
 
 bp = Blueprint("api_reservas", __name__, url_prefix="/api/reservas")
 ORIGENS = {"airbnb", "booking", "direto"}

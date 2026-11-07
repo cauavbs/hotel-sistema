@@ -3,6 +3,7 @@ import uuid
 from datetime import timedelta
 
 import requests
+from google.auth.exceptions import GoogleAuthError
 from firebase_admin.exceptions import FirebaseError
 from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException
@@ -54,7 +55,9 @@ def create_app() -> Flask:
             return erro
         codigo = uuid.uuid4().hex[:8]
         app.logger.exception("[%s] Erro inesperado em %s", codigo, request.path)   # aparece nos Logs da Vercel
-        if request.path.startswith("/api/"):
+        if request.path.startswith("/api/") or request.path == "/login":
+            if isinstance(erro, GoogleAuthError):
+                return jsonify({"erro": "O Firebase recusou a chave de serviço deste computador. Rode python diagnostico.py para ver o motivo ou gere uma nova chave.", "codigo": codigo}), 503
             if isinstance(erro, (FirebaseError, requests.exceptions.RequestException, ConnectionError, TimeoutError)):
                 return jsonify({"erro": "Não foi possível falar com o banco de dados agora. Tente novamente.", "codigo": codigo}), 503
             return jsonify({"erro": f"Erro interno do sistema (código {codigo}). Tente de novo e, se repetir, avise o suporte com este código.", "codigo": codigo}), 500

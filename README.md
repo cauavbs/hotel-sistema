@@ -92,3 +92,23 @@ A aba **Airbnb e Booking** liga o sistema às duas plataformas por calendário (
   com outra aparece em "Conflitos de datas" na página Hoje. Excluir no sistema uma reserva que ainda existe na plataforma não a cancela lá:
   ela volta na próxima sincronização. Cancele sempre na plataforma.
 - **Segurança:** só links https, nunca para endereços da rede interna; os links das plataformas são tratados como segredos (entram no backup JSON).
+
+## Rodar no Windows (PowerShell, na pasta do projeto)
+
+```powershell
+python -m venv venv
+venv\Scripts\Activate.ps1          # se o PowerShell bloquear: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+pip install -r requirements.txt
+copy .env.example .env             # depois edite o .env (veja os comentários dentro dele)
+python criar_admin.py email senha "Nome"
+python app.py                      # http://localhost:5000
+python diagnostico.py              # se o login der erro: explica o que está errado na configuração
+```
+
+No Windows use `python` (não `python3`). Para testar em `http://localhost` ponha `SESSION_COOKIE_SECURE=false` no `.env`.
+Os testes: `pip install -r requirements-dev.txt` e depois `pytest`.
+
+## Se o login der "Erro interno" ou "Não foi possível conectar"
+Rode `python diagnostico.py`. Ele confere o `.env`, a chave de serviço (projeto e conta), o relógio do computador, se o Google aceita a chave
+e se o banco responde, e diz o que corrigir. Os motivos mais comuns: chave de serviço antiga ou apagada (gere outra), chave de outro projeto,
+relógio fora de hora e Realtime Database não criado.
