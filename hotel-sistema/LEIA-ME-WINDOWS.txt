@@ -1,0 +1,23 @@
+SISTEMA DO HOTEL - COMO USAR NO WINDOWS
+=======================================
+
+1. Extraia esta pasta em um lugar do seu usuário, por exemplo C:\Users\SEU_NOME\hotel-sistema
+   (evite a raiz do C:\ e pastas protegidas; foi lá que o Windows negou a gravação dos arquivos).
+
+2. De dois cliques em  iniciar.bat
+   - Na primeira vez ele cria o ambiente e instala tudo (precisa de internet).
+   - Depois roda o diagnóstico: se algo estiver errado, ele escreve o que corrigir e NÃO abre o sistema.
+   - Se estiver tudo certo, abre http://localhost:5000/login no navegador.
+
+3. Entre com um dos administradores que você criou no projeto do hotel.
+
+ATENÇÃO - esta pasta contém SEGREDOS (os arquivos .env e firebase-credentials.json).
+- Nunca envie esta pasta por e-mail, WhatsApp ou chat.
+- Se for usar Git, o .gitignore já impede que esses arquivos subam; confira sempre com  git status.
+- Se esta pasta ou os segredos vazarem, gere uma nova chave no Firebase (Configurações do projeto, Contas de serviço).
+
+Comandos úteis (PowerShell, na pasta do projeto, com  venv\Scripts\Activate.ps1  ativo):
+  python diagnostico.py                      confere a configuração e explica o que está errado
+  python criar_admin.py email senha "Nome"   cria ou atualiza um administrador
+  python backup.py                           backup completo, com comprovantes
+  pytest                                     roda os testes (pip install -r requirements-dev.txt)

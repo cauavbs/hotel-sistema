@@ -1,82 +1,108 @@
-# Sistema Hotel
+# Sistema do Hotel
 
-Mesma arquitetura da barbearia: Flask + templates Jinja, login por e-mail/senha do Firebase,
-Firebase Realtime Database acessado só pelo servidor. Os dois administradores têm acesso total.
+Painel de gestão para um pequeno hotel: reservas, calendários, hóspedes e acompanhantes, pagamentos com comprovante, custos,
+relatórios e sincronização com **Airbnb** e **Booking**. É feito em **Python (Flask)**, usa o **Firebase** (login e banco de dados
+Realtime Database) e pode ser publicado na **Vercel**. Funciona no celular, no tablet e no computador.
 
-| Página | Rota | API |
+**Neste guia:** [Telas](#1-telas) · [Requisitos](#2-requisitos) · [Firebase](#3-configurar-o-firebase-uma-vez) · [Ubuntu](#4-instalar-e-rodar-no-ubuntu) · [Windows](#5-instalar-e-rodar-no-windows) ·
+[.env](#6-o-arquivo-env) · [Administradores](#7-primeiro-acesso-criar-administradores) · [Atualizar](#8-atualizar-o-sistema) · [Git](#9-conectar-ao-git) ·
+[Vercel](#10-publicar-na-vercel) · [Dia a dia](#11-dia-a-dia) · [Airbnb e Booking](#12-airbnb-e-booking) · [Segurança](#13-segurança) · [Problemas](#14-problemas-comuns) · [Estrutura](#15-estrutura-do-projeto)
+
+---
+
+## 1. Telas
+
+| Tela | Endereço | Para quê |
 |---|---|---|
-| Calendário (quartos x dias, cor por origem, faixa amarela = pagamento pendente) | `/` | `/api/reservas` |
-| Reservas (Airbnb, Booking, direto; valor livre; pago/parcial/pendente; forma de pagamento) | `/reservas` | `/api/reservas` |
-| Quartos | `/quartos` | `/api/quartos` |
-| Insumos e Custos (limpeza, produtos, contas, manutenção...) | `/custos` | `/api/custos` |
-| Relatórios e Gráficos | `/relatorios` | `/api/relatorios` |
+| **Hoje** (inicial) | `/` | Chegadas e saídas de hoje e amanhã, quem está na casa, saldos a receber, estado e limpeza de cada quarto, avisos de reservas importadas e conflitos |
+| Calendário | `/calendario` | Quartos nas linhas e dias nas colunas; cor por origem (Airbnb, Booking, direto) e faixa amarela para pagamento pendente |
+| Calendário Anual | `/anual` | Os 12 meses. Dia livre abre a nova reserva; dia parcialmente ocupado deixa escolher entre reservar ou ver os quartos ocupados; dia lotado abre as reservas daquele dia |
+| Reservas | `/reservas` | Hóspede (nome, CPF opcional, telefone), acompanhantes, valor livre por reserva, pagamentos (Pix, dinheiro, débito, crédito, repasse) com comprovante |
+| Histórico | `/historico` | Concluídas, em andamento, futuras, canceladas e **lixeira**; busca por nome, CPF ou telefone; filtros por ano e quarto; totais |
+| Quartos e Bloqueios | `/quartos` | Cadastro de quartos e bloqueio de datas (manutenção, uso próprio) |
+| Insumos e Custos | `/custos` | Gastos com descrição livre e comprovante opcional |
+| Relatórios e Gráficos | `/relatorios` | Receita, custos, lucro, ocupação, época do ano, ranking de quartos, origem, formas de pagamento, maiores gastos |
+| Airbnb e Booking | `/integracoes` | Sincronização dos calendários (seção 12) |
+| Exportar e Backup | `/backup` | CSV para Excel, backup JSON e limpeza de comprovantes sem uso |
 
-Regra de conflito: uma reserva ocupa as noites de check-in até o dia anterior ao check-out;
-o dia do check-out fica livre para outro check-in. Reservas canceladas não bloqueiam datas.
+Todos os usuários são **administradores**: só entra quem tem o perfil `admin` no banco (seção 7).
 
-## Rodar no Ubuntu
+## 2. Requisitos
+
+- **Python 3.11 ou mais novo** (o projeto roda no 3.14).
+- **Git** (para guardar e publicar o código).
+- Uma conta no **Firebase** (plano gratuito basta) e, para publicar, uma conta na **Vercel**.
+- Um editor, como o VS Code.
+
+## 3. Configurar o Firebase (uma vez)
+
+Crie um projeto **só para o hotel** em <https://console.firebase.google.com>. Depois:
+
+1. **Authentication** → *Começar* → *E-mail/senha* → ative e salve. Se aparecer, desative a criação de contas por cadastro (Configurações, Ações do usuário).
+2. **Realtime Database** → *Criar banco de dados* → modo **bloqueado**. Na aba *Regras*, deixe: `{ "rules": { ".read": false, ".write": false } }`. Só o servidor acessa o banco.
+3. **Chave de API da Web**: Configurações do projeto (engrenagem) → *Geral* → *Seus aplicativos* → ícone `</>` → registre um app Web (sem Hosting) e copie o `apiKey` (começa com `AIza`).
+4. **Chave de serviço**: Configurações do projeto → *Contas de serviço* → *Gerar nova chave privada*. Salve o arquivo na raiz do projeto com o nome **`firebase-credentials.json`**.
+5. **URL do banco**: no topo da tela de dados do Realtime Database (termina em `firebaseio.com` ou `firebasedatabase.app`).
+
+## 4. Instalar e rodar no Ubuntu
+
 ```bash
-python3 -m venv venv && source venv/bin/activate
+# 1) programas necessários (uma vez)
+sudo apt update && sudo apt install -y python3 python3-venv git
+
+# 2) entrar na pasta do projeto e criar o ambiente virtual
+cd ~/hotel-sistema
+python3 -m venv venv
+source venv/bin/activate                 # o prompt passa a começar com (venv)
+
+# 3) instalar as dependências
+pip install --upgrade pip
 pip install -r requirements.txt
-cp .env.example .env        # preencha (veja abaixo)
-python3 criar_admin.py email1@exemplo.com SENHA "Nome 1"
-python3 criar_admin.py email2@exemplo.com SENHA "Nome 2"
-python3 app.py              # http://localhost:5000/login
+pip install -r requirements-dev.txt      # opcional: só para rodar os testes
+
+# 4) configurar (veja a seção 6 e coloque o firebase-credentials.json na pasta)
+cp .env.example .env
+nano .env                                # ou abra no VS Code: code .env
+
+# 5) conferir, criar o administrador e rodar
+python3 diagnostico.py                   # explica o que estiver errado
+python3 criar_admin.py seuemail@exemplo.com SuaSenha "Seu Nome"
+python3 app.py                           # abra http://localhost:5000
 ```
 
-## Firebase (crie um projeto NOVO para o hotel)
-1. Authentication > Método de login > ative **E-mail/senha**.
-2. Realtime Database > criar banco; copie a URL para `FIREBASE_DATABASE_URL`.
-3. Configurações do projeto > Geral > **Chave de API da Web** vai em `FIREBASE_API_KEY`.
-4. Contas de serviço > Gerar nova chave privada, salvar como `firebase-credentials.json` na raiz.
-5. Regras do Realtime Database: `{ "rules": { ".read": false, ".write": false } }` (só o servidor acessa).
+Nas próximas vezes: `cd ~/hotel-sistema`, `source venv/bin/activate` e `python3 app.py`.
 
-## Deploy na Vercel
-Suba para o GitHub, importe na Vercel e crie as variáveis `SECRET_KEY`, `FIREBASE_API_KEY`,
-`FIREBASE_DATABASE_URL` e `FIREBASE_CREDENTIALS_JSON` (conteúdo do JSON da conta de serviço).
-Defina `FLASK_DEBUG=false`.
+## 5. Instalar e rodar no Windows
 
-## Dados (Realtime Database)
-`quartos`, `reservas` (datas em AAAA-MM-DD), `custos`, `usuarios`.
+Instale o **Python** em <https://www.python.org/downloads> marcando **"Add python.exe to PATH"** na primeira tela, e o **Git** em <https://git-scm.com/download/win>.
+Extraia o projeto em uma pasta do seu usuário, como `C:\Users\SEU_NOME\hotel-sistema` (evite a raiz do `C:\`, onde o Windows pode negar a gravação de arquivos).
 
-## Segurança e operação
+**Jeito rápido:** dê dois cliques em **`iniciar.bat`**. Na primeira vez ele cria o ambiente e instala as dependências; depois roda o diagnóstico e,
+se estiver tudo certo, abre o sistema no navegador. Se houver problema, ele mostra o que corrigir e não abre o sistema.
 
-- **Quem entra:** só contas com `perfil: "admin"` em `usuarios/{uid}`. Crie ou atualize cada administrador com
-  `python3 criar_admin.py email senha "Nome"` (funciona também para e-mail já existente, e serve para trocar a senha).
-  No Firebase, em Authentication > Configurações > Ações do usuário, desative a criação de contas por cadastro, se a opção existir.
-- **Testar no celular:** por padrão o servidor só aceita este computador (`127.0.0.1`). Para abrir pelo celular, ponha
-  `FLASK_HOST=0.0.0.0` no `.env`; o debug é desligado automaticamente nesse modo.
-- **Tentativas de login:** limite de 5 falhas por IP e 10 por e-mail a cada 15 minutos, guardado no banco (nó `tentativas`, só com hashes).
-- **Reservas simultâneas:** cada gravação de reserva trava o quarto por instantes (nó `bloqueios`), então dois
-  administradores nunca passam juntos pela checagem de conflito. Se um deles receber "Outro administrador está salvando...", basta repetir.
-- **Cabeçalhos de segurança:** CSP e outros em `app.py`. O Chart.js fica em `static/vendor/` (sem CDN).
-  Por causa da CSP, não use `<script>` nem `onclick=` dentro dos templates: ponha o código em `static/js/`.
-- **Dados pessoais (LGPD):** `python3 anonimizar_antigos.py --meses N` simula a anonimização de reservas antigas
-  (`--aplicar` grava). Confirme o prazo com o contador.
-- **Trocar a chave do Firebase:** Contas de serviço > Gerar nova chave privada; substitua `firebase-credentials.json` e a variável
-  `FIREBASE_CREDENTIALS_JSON` na Vercel (Redeploy); depois apague a chave antiga em "Gerenciar permissões da conta de serviço" > Chaves.
-- **Testes:** `pip install -r requirements-dev.txt && pytest` (usam um banco simulado, não tocam no Firebase).
+**Passo a passo manual** (PowerShell, dentro da pasta do projeto):
 
-## Hoje, bloqueios, lixeira e backup
+```powershell
+# 1) ambiente virtual
+cd $HOME\hotel-sistema
+python -m venv venv
+venv\Scripts\Activate.ps1                # se o PowerShell bloquear: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+                                         # o prompt passa a começar com (venv)
 
-- **Hoje (página inicial):** chegadas e saídas de hoje e amanhã, quem está na casa, saldos a receber e o estado de cada quarto,
-  com o controle de limpeza (Limpo / A limpar). O calendário mensal ficou em `/calendario`.
-- **Bloqueio de datas:** na aba Quartos e Bloqueios. Bloqueia o quarto por um período (manutenção, uso próprio) e impede reservas nele;
-  aparece em cinza no calendário e conta como indisponível no Calendário Anual.
-- **Calendário Anual:** dia livre abre a nova reserva já com o quarto e as datas; dia parcialmente ocupado deixa escolher entre
-  reservar ou ver os quartos ocupados; dia lotado abre as reservas daquele dia (`/reservas?dia=AAAA-MM-DD`).
-- **Lixeira:** "Excluir" uma reserva a move para a lixeira (aba Histórico), de onde dá para restaurar ou excluir de vez
-  (só então os comprovantes são apagados). Ao restaurar, o conflito de datas é conferido de novo.
-- **Exportar e Backup:** CSV para Excel (reservas e custos), backup JSON dos dados e limpeza de comprovantes sem uso.
-  O backup completo, com os comprovantes, é `python3 backup.py` (cria a pasta `backups/`, que fica fora do Git).
-- **Datas:** o sistema usa o horário de Brasília (UTC-3) para "hoje", no navegador e no servidor.
-- **Valores:** aceitam vírgula, são arredondados em centavos, e `nan`, negativos e acima de R$ 10.000.000 são recusados.
-- **Erros:** falha do banco mostra "não foi possível falar com o banco"; qualquer outro erro mostra um código de 8 caracteres
-  que também aparece nos Logs da Vercel.
+# 2) dependências
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install -r requirements-dev.txt      # opcional: só para rodar os testes
 
-## Airbnb e Booking (sincronização por iCal)
+# 3) configuração (veja a seção 6 e coloque o firebase-credentials.json na pasta)
+copy .env.example .env
+notepad .env
 
-A aba **Airbnb e Booking** liga o sistema às duas plataformas por calendário (iCal). O sistema é a central:
+# 4) conferir, criar o administrador e rodar
+python diagnostico.py
+python criar_admin.py seuemail@exemplo.com SuaSenha "Seu Nome"
+python app.py                            # abra http://localhost:5000
+```
 
 - **Entrada:** você cola, por quarto, o link de calendário que o Airbnb e o Booking oferecem (campo "Link do Airbnb/Booking").
   O sistema lê esses links e cria as reservas como *importadas* (só com as datas, marcadas com "⚠ completar"); você preenche hóspede e valor.

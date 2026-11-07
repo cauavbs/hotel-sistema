@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Airbnb e Booking - Hotel{% endblock %}
+{% block cabecalho %}Airbnb e Booking{% endblock %}
+{% block conteudo %}
+<section class="card full-width">
+    <h2>🔄 Como funciona</h2>
+    <p style="margin-top:0">O sistema é a central: ele <b>lê</b> o calendário de cada quarto no Airbnb e no Booking (as reservas viram "importadas", só com as datas)
+    e <b>entrega</b> um calendário por quarto para cada plataforma (com as suas reservas diretas e as da outra plataforma). Assim uma reserva feita em um canal bloqueia os outros.</p>
+    <p style="margin-bottom:0;color:#64748b;font-size:.9rem">Cada plataforma decide de quanto em quanto tempo consulta o seu calendário, então pode haver atraso de algumas horas.
+    Nome do hóspede e valor não passam por aqui: complete na aba Reservas.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <button type="button" id="sync-tudo" style="width:auto">Sincronizar tudo agora</button>
+        <button type="button" id="novo-token" class="ghost" style="width:auto;background:#64748b">Gerar novos links de entrega</button>
+    </div>
+    <p id="status-geral" style="margin:10px 0 0"></p>
+</section>
+<details class="card full-width ajuda">
+    <summary><b>Onde encontrar os links em cada plataforma</b></summary>
+    <p><b>Airbnb:</b> Calendário, escolha o anúncio, Configurações de disponibilidade, Conectar calendários. Em <i>Exportar calendário</i> copie o link e cole abaixo em "Link do Airbnb";
+    em <i>Importar calendário</i> cole o link "Entregar ao Airbnb" do quarto.</p>
+    <p><b>Booking:</b> no Extranet, em Tarifas e disponibilidade, procure a sincronização de calendários (o nome e o lugar variam, e em alguns casos o suporte precisa ativar).
+    Copie o link de exportação para "Link do Booking" e cole o link "Entregar ao Booking" na importação.</p>
+    <p style="margin-bottom:0">Se a opção não aparecer na sua conta ou nos seus quartos, a saída é um gerenciador de canais.</p>
+</details>
+<div id="quartos" class="full-width"></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/integracoes.js') }}"></script>{% endblock %}
